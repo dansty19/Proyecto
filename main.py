@@ -26,7 +26,7 @@ nltk.download('wordnet') # Paquete para encontrar sinonimos de palabras en ingl�
 
 def imc():
     # Leemos el archivo que contiene información de películas y seleccionamos las columnas más importantes
-    df = pd.read_csv("dataset/Hipertension_Arterial_Mexico_MoH-modificado.csv")[['FOLIO_I', 'sexo', 'edad', 'peso', 'estatura', 'masa_corporal', 'riesgo_hipertension']]
+    df = pd.read_csv("dataset/Hipertension_Arterial_Mexico.csv")[['FOLIO_I', 'sexo', 'edad', 'peso', 'estatura', 'masa_corporal', 'riesgo_hipertension']]
     
     # Renombramos las columnas para que sean más faciles de entender
     df.columns = ['Folio', 'Sexo', 'Edad', 'Peso', 'Estatura', 'Masa_Corporal', 'Riesgo_Hipertension']
