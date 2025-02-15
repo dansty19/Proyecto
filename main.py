@@ -15,9 +15,6 @@ import nltk # NLTK es una librería para procesar texto y analizar palabras.
 from nltk.tokenize import word_tokenize # Se usa para dividir un texto en palabras individuales.
 from nltk.corpus import wordnet # Nos ayuda a encontrar sinonimos de palabras. 
 
-# Indicamos la ruta donde NLTK buscará los datos descargados en nuestro computador. 
-#nltk.data.path.append('C:\Users\Daniel Quintero\AppData\Roaming\nltk_data')
-
 # Descargamos las herramientas necesarias de NLTK para el análisis de palabras.
 
 nltk.download('punkt') # Paquete para dividir frases en palabras.
@@ -25,7 +22,7 @@ nltk.download('wordnet') # Paquete para encontrar sinonimos de palabras en ingl�
 
 
 def imc():
-    # Leemos el archivo que contiene información de películas y seleccionamos las columnas más importantes
+    # Leemos el archivo que contiene información de salud y seleccionamos las columnas más importantes
     df = pd.read_csv("dataset/Hipertension_Arterial_Mexico.csv")[['FOLIO_I', 'sexo', 'edad', 'peso', 'estatura', 'masa_corporal', 'riesgo_hipertension']]
     
     # Renombramos las columnas para que sean más faciles de entender
@@ -34,8 +31,7 @@ def imc():
     # Llenamos los espacios vacíos con texto vacío y convertimos los datos en una lista de diccionarios 
     return df.fillna('').to_dict(orient='records')
 
-# Cargamos las películas al iniciar la API para no leer el archivo cada vez que alguien pregunte por ellas.
-#movies_list = imc()
+# Cargamos los datos de salud al iniciar la API para no leer el archivo cada vez que alguien pregunte por ellas.
 imc_list = imc()
 
 #Función para encontrar sinónimos de una palabra
@@ -56,24 +52,22 @@ def home():
     return HTMLResponse('<h1>Bienvenido a la API de Salud</h1>')
 
 
-
-
 # Obteniendo la lista de Salud
 # Creamos una ruta para obtener todas los datos de salud
 # Ruta para obtener todas los datos de salud disponibles
 @app.get('/salud', tags=['Salud'])
 def get_salud():
-    # Si hay películas, las enviamos, si no, mostramos un error
+    # Si hay datos de salud, las enviamos, si no, mostramos un error.
     return imc_list or HTTPException(status_code=500, detail="No hay datos de películas disponibles")
 
 
 # Ruta para obtener una película específica según su ID
 @app.get('/salud/{Peso}', tags=['Salud'])
 def get_salud(Peso: str):
-    # Buscamos en la lista de películas la que tenga el mismo ID
+    # Buscamos en la lista de datos de salud  por Peso
     return next((m for m in imc_list if m['Peso'] == Peso), {"detalle": "película no encontrada"})
 
-# Ruta del chatbot que responde con películas según palabras clave de la categoría
+# Ruta del chatbot que responde con películas según palabras clave de Sexo
 
 @app.get('/chatbot', tags=['Chatbot'])
 def chatbot(query: str):
@@ -83,17 +77,17 @@ def chatbot(query: str):
     # Buscamos sinónimos de las palabras clave para ampliar la búsqueda
     synonyms = {word for q in query_words for word in get_synonyms(q)} | set(query_words)
     
-    # Filtramos la lista de películas buscando coincidencias en la categoría
+    # Filtramos la lista de datos de salud buscando coincidencias en la categoría
     results = [m for m in imc_list if any (s in m['Sexo'].lower() for s in synonyms)]
     
-    # Si encontramos películas, enviamos la lista; si no, mostramos un mensaje de que no se encontraron coincidencias
+    # Si encontramos los datos de Sexo, enviamos la lista; si no, mostramos un mensaje de que no se encontraron coincidencias
     
     return JSONResponse (content={
         "respuesta": "Aquí tienes algunas películas relacionadas." if results else "No encontré películas en esa categoría.",
         "películas": results
     })
     
-# Ruta para buscar películas por categoría específica
+# Ruta para buscar datos de salud por categoría específica
 
 @app.get ('/salud/by_Sexo/', tags=['Salud'])
 def get_movies_by_category(Sexo: str):
